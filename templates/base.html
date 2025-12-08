@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Встречи с преподавателями</title>
+    <title>Записи к учителям</title>
+    <script>
+        (() => {
+            const storageKey = "ui-theme";
+            const saved = localStorage.getItem(storageKey);
+            const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const theme = saved || (prefersDark ? "dark" : "light");
+            const root = document.documentElement;
+            root.dataset.theme = theme;
+            root.style.backgroundColor = theme === "dark" ? "#0c111b" : "#f7f7f5";
+        })();
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header class="site-header">
-        <div class="logo">Школьные встречи</div>
+        <div class="logo">Записи к учителям</div>
         <nav>
             <a href="{{ url_for('index') }}">Главная</a>
             {% if current_user %}
                 {% if current_user.role == 'parent' %}
-                    <a href="{{ url_for('parent') }}">Запись</a>
+                    <a href="{{ url_for('parent') }}">Родителям</a>
                 {% elif current_user.role == 'teacher' %}
-                    <a href="{{ url_for('teacher_dashboard') }}">Мои записи</a>
+                    <a href="{{ url_for('teacher_dashboard') }}">Кабинет учителя</a>
                 {% elif current_user.role == 'admin' %}
-                    <a href="{{ url_for('admin_users') }}">Админ</a>
+                    <a href="{{ url_for('admin_users') }}">Пользователи</a>
                 {% endif %}
                 <a href="{{ url_for('logout') }}">Выйти</a>
             {% else %}
                 <a href="{{ url_for('login') }}">Войти</a>
             {% endif %}
         </nav>
+        <button class="theme-toggle" type="button" data-toggle-theme aria-label="Переключить тему">
+            <span class="toggle-icon" aria-hidden="true">●</span>
+            <span class="toggle-label">Тема</span>
+        </button>
     </header>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -39,5 +54,34 @@
     <main class="content">
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        (() => {
+            const storageKey = "ui-theme";
+            const root = document.documentElement;
+            const toggle = document.querySelector("[data-toggle-theme]");
+
+            const applyTheme = (theme) => {
+                root.dataset.theme = theme;
+                localStorage.setItem(storageKey, theme);
+                if (toggle) {
+                    toggle.setAttribute("aria-label", theme === "dark"
+                        ? "Переключить на светлую тему"
+                        : "Переключить на тёмную тему");
+                    toggle.dataset.mode = theme;
+                }
+            };
+
+            const saved = localStorage.getItem(storageKey);
+            const prefersDark = window.matchMedia &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches;
+            applyTheme(saved || (prefersDark ? "dark" : "light"));
+
+            toggle && toggle.addEventListener("click", () => {
+                const next = root.dataset.theme === "dark" ? "light" : "dark";
+                applyTheme(next);
+            });
+        })();
+    </script>
 </body>
 </html>
