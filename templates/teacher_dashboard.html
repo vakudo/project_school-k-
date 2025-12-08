@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Преподаватель</p>
+        <h2>{{ teacher.full_name }}</h2>
+        <p class="lead">{{ teacher.subject }} · кабинет {{ teacher.room }}</p>
+    </div>
+</section>
+
+<div class="card">
+    <div class="table-header">
+        <div>
+            <p class="eyebrow">Ваше расписание</p>
+            <p class="muted">Все слоты и записи родителей.</p>
+        </div>
+    </div>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>Время</th>
+                <th>Статус</th>
+                <th>ФИО родителя</th>
+                <th>Email</th>
+                <th>Вопрос</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slot in slots %}
+                <tr class="{% if slot.booked %}busy{% endif %}">
+                    <td>{{ slot.time_label }}</td>
+                    <td>{% if slot.booked %}Занято{% else %}Свободно{% endif %}</td>
+                    <td>{{ slot.parent_name or "—" }}</td>
+                    <td>{{ slot.parent_email or "—" }}</td>
+                    <td>{{ slot.question or "—" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

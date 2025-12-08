@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Родителям</p>
+        <h2>Выберите преподавателя для записи</h2>
+        <p class="lead">Доступны свободные слоты и быстрый отклик.</p>
+    </div>
+</section>
+
+<div class="grid">
+    {% for teacher in teachers %}
+        <article class="card teacher-card">
+            <div class="teacher-meta">
+                <img src="{{ teacher.photo_url or 'https://via.placeholder.com/150' }}" alt="{{ teacher.full_name }}">
+                <div>
+                    <h3>{{ teacher.full_name }}</h3>
+                    <p class="muted">{{ teacher.subject }}</p>
+                    <p class="pill">Кабинет {{ teacher.room }}</p>
+                </div>
+            </div>
+            <a class="btn primary full" href="{{ url_for('parent_teacher', teacher_id=teacher.id) }}">Записаться</a>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}

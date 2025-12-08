@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Администратор</p>
+        <h2>Управление учетными записями</h2>
+        <p class="lead">Создавайте, редактируйте и удаляйте пользователей. Для учителя укажите связанного преподавателя.</p>
+    </div>
+</section>
+
+<div class="grid">
+    <div class="card">
+        <h3>Создать пользователя</h3>
+        <form method="post" enctype="multipart/form-data">
+            <label>Email
+                <input type="email" name="email" required placeholder="user@school.local">
+            </label>
+            <label>Пароль
+                <input type="text" name="password" required placeholder="Пароль">
+            </label>
+            <label>Роль
+                <select name="role" id="create-role" onchange="toggleTeacherSelect(this, 'create-teacher')" required>
+                    <option value="parent">Родитель</option>
+                    <option value="teacher">Преподаватель</option>
+                    <option value="admin">Администратор</option>
+                </select>
+            </label>
+            <label id="create-teacher" class="hidden">Преподаватель для аккаунта
+                <select name="teacher_id">
+                    <option value="">-- выберите --</option>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}">{{ teacher.full_name }} ({{ teacher.subject }})</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label id="create-photo" class="hidden">Фотография (файл)
+                <input type="file" name="photo_file" accept="image/*">
+            </label>
+            <button class="btn primary full" type="submit" style="margin-top: 10px;">Создать</button>
+        </form>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+        <h3>Существующие пользователи</h3>
+        <div class="slots">
+            {% for user in users %}
+                <div class="slot">
+                        <div class="slot-header">
+                            <strong>{{ user.email }}</strong>
+                            <span class="pill">{{ user.role }}</span>
+                        </div>
+                        <form class="slot-form" method="post" enctype="multipart/form-data" action="{{ url_for('admin_update_user', user_id=user.id) }}">
+                            <div class="form-grid">
+                                <label>Email
+                                    <input type="email" name="email" value="{{ user.email }}" required>
+                                </label>
+                                <label>Пароль (оставьте пустым, чтобы не менять)
+                                    <input type="text" name="password" placeholder="Новый пароль">
+                                </label>
+                                <label>Роль
+                                    <select name="role" onchange="toggleTeacherSelect(this, 'teacher-{{ user.id }}')" required>
+                                        <option value="parent" {% if user.role == 'parent' %}selected{% endif %}>Родитель</option>
+                                        <option value="teacher" {% if user.role == 'teacher' %}selected{% endif %}>Преподаватель</option>
+                                        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+                                    </select>
+                                </label>
+                                <label id="teacher-{{ user.id }}" class="{% if user.role != 'teacher' %}hidden{% endif %}">Преподаватель для аккаунта
+                                    <select name="teacher_id">
+                                        <option value="">-- выберите --</option>
+                                        {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}" {% if user.teacher_id == teacher.id %}selected{% endif %}>{{ teacher.full_name }} ({{ teacher.subject }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                                <label id="photo-{{ user.id }}" class="{% if user.role != 'teacher' %}hidden{% endif %}">Фотография (файл)
+                                    <input type="file" name="photo_file" accept="image/*">
+                                    {% if user.teacher_id %}
+                                        {% set existing_teacher = (teachers | selectattr('id','equalto',user.teacher_id) | list | first) %}
+                                        {% if existing_teacher and existing_teacher.photo_url %}
+                                            <p class="muted small">Текущее фото: {{ existing_teacher.photo_url }}</p>
+                                        {% endif %}
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <button class="btn primary" type="submit">Сохранить</button>
+                            </div>
+                        </form>
+                    {% if user.email != 'admin@school.local' %}
+                        <form method="post" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Удалить пользователя?')" style="margin-top: 6px;">
+                            <button class="btn ghost" type="submit">Удалить</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleTeacherSelect(selectEl, targetId) {
+    const target = document.getElementById(targetId);
+    const photo = document.getElementById(targetId.replace('teacher', 'photo'));
+    const isTeacher = selectEl.value === 'teacher';
+    if (target) target.classList.toggle('hidden', !isTeacher);
+    if (photo) photo.classList.toggle('hidden', !isTeacher);
+}
+</script>
+{% endblock %}

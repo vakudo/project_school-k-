@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Онлайн-запись</p>
+        <h1>Организуйте встречи родителей с преподавателями</h1>
+        <p class="lead">Выберите свою роль, чтобы посмотреть расписание и управлять записью.</p>
+        <div class="actions">
+            <a class="btn primary" href="{{ url_for('login') }}">Войти</a>
+            {% if current_user and current_user.role == 'parent' %}
+                <a class="btn ghost" href="{{ url_for('parent') }}">К преподавателям</a>
+            {% elif current_user and current_user.role == 'teacher' %}
+                <a class="btn ghost" href="{{ url_for('teacher_dashboard') }}">Мои записи</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card highlight">
+        <h3>Как это работает?</h3>
+        <ol>
+            <li>Выберите роль и нужного преподавателя.</li>
+            <li>Забронируйте удобное время или посмотрите заявки.</li>
+            <li>Получите подтверждение сразу на сайте.</li>
+        </ol>
+    </div>
+</section>
+{% endblock %}

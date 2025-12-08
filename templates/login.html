@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Вход</p>
+        <h2>Авторизация</h2>
+        <p class="lead">Используйте выданный аккаунт преподавателя или родителя.</p>
+    </div>
+</section>
+
+<div class="card" style="max-width: 420px;">
+    <form method="post">
+        <label>
+            Email
+            <input type="email" name="email" required placeholder="user@example.com">
+        </label>
+        <label>
+            Пароль
+            <input type="password" name="password" required placeholder="••••••••">
+        </label>
+        <button type="submit" class="btn primary full" style="margin-top: 14px;">Войти</button>
+    </form>
+    <p class="muted small" style="margin-top: 12px;">
+        Администратор: admin@school.local / admin123<br>
+        Родитель: parent@example.com / parent123<br>
+        Преподаватель (пример): 1@school.local / teacher123
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Запись</p>
+        <h2>{{ teacher.full_name }}</h2>
+        <p class="lead">{{ teacher.subject }} · кабинет {{ teacher.room }}</p>
+    </div>
+    <a class="btn ghost" href="{{ url_for('parent') }}">← ко всем преподавателям</a>
+</section>
+
+<div class="booking-layout">
+    <div class="card teacher-card">
+        <div class="teacher-meta">
+            <img src="{{ teacher.photo_url or 'https://via.placeholder.com/150' }}" alt="{{ teacher.full_name }}">
+            <div>
+                <h3>{{ teacher.full_name }}</h3>
+                <p class="muted">{{ teacher.subject }}</p>
+                <p class="pill">Кабинет {{ teacher.room }}</p>
+            </div>
+        </div>
+        <p class="muted">Выберите время и оставьте контактные данные. После брони окно станет занятым.</p>
+    </div>
+
+    <div class="card">
+        <h3>Окна для записи</h3>
+        <div class="slots">
+            {% for slot in slots %}
+                <div class="slot {% if slot.booked %}busy{% endif %}">
+                    <div class="slot-header">
+                        <div>
+                            <strong>{{ slot.time_label }}</strong>
+                            {% if slot.booked %}
+                                <span class="status busy">Занято</span>
+                            {% else %}
+                                <span class="status free">Свободно</span>
+                            {% endif %}
+                        </div>
+                        {% if not slot.booked %}
+                            <button class="btn ghost small" onclick="toggleForm({{ slot.id }})">Записаться</button>
+                        {% endif %}
+                    </div>
+
+                    {% if slot.booked %}
+                        <p class="muted small">Уже занято другим родителем.</p>
+                    {% else %}
+                        <form id="form-{{ slot.id }}" class="slot-form hidden" method="post" action="{{ url_for('book_slot', slot_id=slot.id) }}">
+                            <label>
+                                ФИО родителя
+                                <input type="text" name="parent_name" required>
+                            </label>
+                            <label>
+                                Электронная почта
+                                <input type="email" name="parent_email" required>
+                            </label>
+                            <label>
+                                Ваш вопрос
+                                <textarea name="question" rows="2" placeholder="Что бы вы хотели обсудить?"></textarea>
+                            </label>
+                            <button type="submit" class="btn primary full">Подтвердить запись</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForm(slotId) {
+        const form = document.getElementById(`form-${slotId}`);
+        if (!form) return;
+        form.classList.toggle('hidden');
+    }
+</script>
+{% endblock %}
