@@ -32,6 +32,7 @@
                 {% endif %}
                 <a href="{{ url_for('logout') }}">Выйти</a>
             {% else %}
+                <a href="{{ url_for('register') }}">Регистрация</a>
                 <a href="{{ url_for('login') }}">Войти</a>
             {% endif %}
         </nav>

@@ -7,11 +7,17 @@
         <h1>Организуйте встречи родителей с преподавателями</h1>
         <p class="lead">Выберите свою роль, чтобы посмотреть расписание и управлять записью.</p>
         <div class="actions">
-            <a class="btn primary" href="{{ url_for('login') }}">Войти</a>
-            {% if current_user and current_user.role == 'parent' %}
-                <a class="btn ghost" href="{{ url_for('parent') }}">К преподавателям</a>
-            {% elif current_user and current_user.role == 'teacher' %}
-                <a class="btn ghost" href="{{ url_for('teacher_dashboard') }}">Мои записи</a>
+            {% if current_user %}
+                {% if current_user.role == 'parent' %}
+                    <a class="btn primary" href="{{ url_for('parent') }}">К преподавателям</a>
+                {% elif current_user.role == 'teacher' %}
+                    <a class="btn primary" href="{{ url_for('teacher_dashboard') }}">Мои записи</a>
+                {% elif current_user.role == 'admin' %}
+                    <a class="btn primary" href="{{ url_for('admin_users') }}">Пользователи</a>
+                {% endif %}
+            {% else %}
+                <a class="btn primary" href="{{ url_for('login') }}">Войти</a>
+                <a class="btn ghost" href="{{ url_for('register') }}">Зарегистрироваться</a>
             {% endif %}
         </div>
     </div>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <p class="eyebrow">Регистрация</p>
+        <h2>Создать учетную запись</h2>
+        <p class="lead">Зарегистрируйтесь как родитель, чтобы бронировать встречи с учителями.</p>
+    </div>
+</section>
+
+<div class="card" style="max-width: 480px;">
+    <form method="post">
+        <label>
+            Email
+            <input type="email" name="email" required placeholder="parent@example.com">
+        </label>
+        <label>
+            Пароль
+            <input type="password" name="password" required placeholder="••••••••">
+        </label>
+        <label>
+            Повторите пароль
+            <input type="password" name="password_confirm" required placeholder="••••••••">
+        </label>
+        <button type="submit" class="btn primary full" style="margin-top: 14px;">Зарегистрироваться</button>
+    </form>
+    <p class="muted small" style="margin-top: 12px;">
+        Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a>
+    </p>
+</div>
+{% endblock %}

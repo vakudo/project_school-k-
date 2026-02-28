@@ -186,6 +186,42 @@ def inject_user():
     return {"current_user": user}
 
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if session.get("user_id"):
+        flash("Вы уже авторизованы.", "info")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        password_confirm = request.form.get("password_confirm", "")
+
+        if not email or not password:
+            flash("Заполните email и пароль.", "error")
+            return redirect(url_for("register"))
+
+        if password != password_confirm:
+            flash("Пароли не совпадают.", "error")
+            return redirect(url_for("register"))
+
+        if User.query.filter_by(email=email).first():
+            flash("Пользователь с таким email уже существует.", "error")
+            return redirect(url_for("register"))
+
+        new_user = User(email=email, role="parent")
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        session["user_id"] = new_user.id
+        session["role"] = new_user.role
+        flash("Аккаунт создан. Добро пожаловать!", "success")
+        return redirect(url_for("parent"))
+
+    return render_template("register.html")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
